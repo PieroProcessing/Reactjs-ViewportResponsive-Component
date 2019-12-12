@@ -1,0 +1,48 @@
+import React, {useState, useEffect} from 'react';
+
+if (typeof window === 'undefined') {
+    global.window = {}
+}
+
+function getWindowDimensions() {
+    const {innerWidth: width, innerHeight: height} = window;
+    return {
+        width,
+        height
+    };
+}
+
+export default function useWindowDimensions() {
+    let unmounted = false;
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+    useEffect(() => {
+        function handleResize() {
+            const dimensions = getWindowDimensions();
+            if(unmounted)return;
+            if (dimensions.width >= 1920) {
+                  setWindowDimensions({width: 1920, height: dimensions.height});
+            } else if (dimensions.width >= 1366) {
+                  setWindowDimensions({width: 1366, height: dimensions.height});
+            } else if (dimensions.width >= 1024) {
+                  setWindowDimensions({width: 1024,height: dimensions.height});
+            } else if (dimensions.width >= 768) {
+                // console.log('dimensions', dimensions);
+                  setWindowDimensions({width: 768, height: dimensions.height});
+            } else if (dimensions.width >= 411) {
+                  setWindowDimensions({width: 411, height: dimensions.height});
+            } else {
+                  setWindowDimensions({width: 320, height: dimensions.height});
+            }
+            // setWindowDimensions();
+        }
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            unmounted = true;
+        };
+    }, []);
+
+    return windowDimensions;
+}
